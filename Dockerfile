@@ -26,6 +26,22 @@ RUN apt-get install build-essential chrpath libssl-dev libxft-dev -y \
     && ln -sf /usr/local/share/$PHANTOM_JS/bin/phantomjs /usr/local/bin \
     && phantomjs --version
 
+# Install Java
+RUN echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections
+RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" > /etc/apt/sources.list.d/webupd8team-java-trusty.list
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends oracle-java8-installer \
+    && apt-get clean all
+
+ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
+
+# Install Elasticsearch
+RUN curl -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.4.3.tar.gz \
+    && tar -xvf elasticsearch-5.4.3.tar.gz \
+    && elasticsearch-5.4.3/bin/elasticsearch-plugin install analysis-kuromoji \
+    && elasticsearch-5.4.3/bin/elasticsearch-plugin install analysis-icu
+
 RUN rm -rf /var/lib/apt/lists/*
 
 RUN npm install -g n \
