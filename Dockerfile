@@ -48,3 +48,6 @@ RUN npm install -g n \
     && n 7.8.0 \
     && node -v \
     && npm -v
+
+RUN useradd circleci-test
+USER circleci-test
